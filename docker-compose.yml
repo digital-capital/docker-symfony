@@ -1,0 +1,50 @@
+version: '3'
+
+services:
+    php:
+        build:
+            context: .
+            dockerfile: docker/php/Dockerfile
+            args:
+                TIMEZONE: ${TIMEZONE}
+        volumes:
+            - ./symfony/:/var/www/symfony/
+            - /home/amine/.ssh/:/root/.ssh/
+        networks:
+            - symfony
+    nginx:
+        build:
+            context: .
+            dockerfile: docker/nginx/Dockerfile
+        volumes:
+            - ./symfony/:/var/www/symfony/
+        ports:
+            - 80:80
+        networks:
+            - symfony
+    phpmyadmin:
+        image: phpmyadmin
+        restart: always
+        ports:
+        - 8181:80
+        environment:
+            - PMA_HOST=dbserver
+        networks:
+            - symfony
+    dbserver:
+        image: mariadb
+        # command: --default-authentication-plugin=mysql_native_password 
+        volumes:
+            - "./database-data:/var/lib/mysql"
+            - "./database-bridge:/home"
+        environment:
+            MARIADB_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MARIADB_DATABASE: ${MYSQL_DATABASE}
+            MARIADB_USER: ${MYSQL_USER}
+            MARIADB_PASSWORD: ${MYSQL_PASSWORD}
+        ports:
+            - 3306:3306
+        networks:
+            - symfony
+networks:
+    symfony:
