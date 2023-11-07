@@ -9,7 +9,7 @@ services:
                 TIMEZONE: ${TIMEZONE}
         volumes:
             - ./symfony/:/var/www/symfony/
-            - /home/amine/.ssh/:/root/.ssh/
+            #- /home/amine/.ssh/:/root/.ssh/
         networks:
             - symfony
     nginx:
