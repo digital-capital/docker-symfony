@@ -4,10 +4,12 @@ namespace App\Controller;
 
 use App\Entity\Category;
 use App\Entity\Product;
+use App\Message\MessageNotification;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class HomeController extends AbstractController
@@ -93,6 +95,18 @@ class HomeController extends AbstractController
         $managerRegistry->getManager()->flush();
         
         return new Response('Next Page 2');
+    }
+
+    #[Route('/amqp', name: 'app_amqp')]
+    public function amqp(MessageBusInterface $bus): Response
+    {
+        for($i=0;$i<100;$i++){
+            $bus->dispatch(new MessageNotification('Mon Message # '.$i));
+        }
+
+        return $this->render('home/index.html.twig', [
+            'controller_name' => 'HomeController',
+        ]);
     }
 
 }

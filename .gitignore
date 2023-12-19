@@ -1,2 +1,4 @@
 .vscode
 database-data/*
+nodejs/node_modules
+data-minio/*
